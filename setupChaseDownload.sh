@@ -1,12 +1,26 @@
 #!/usr/bin/env ruby
 
 require 'watir-webdriver'
+require 'date'
 
-if ARGV.length < 3
-  raise 'Must have three arguments, Dude!  (Umm...pwd, start and end dates)'
+URL = 'https://chase.com'
+USERNAME = 'andreaclingenpeel'
+
+def format_date(dt)
+  dt.strftime('%m/%d/%Y')
 end
 
-open('chase_upload.log', 'a') { |f| f.puts "Processing for range #{ARGV[1]} to #{ARGV[2]}" }
+# Pull that last logged value to determine the next date range
+log_vals = `tail -1 ./chase_upload.log`
+log_vals = log_vals.split(' ')
+mdy_to   = log_vals[5].split('/')
+
+# new date range -- last "to" minus 2 days to current date + 1 (as long as that is greater than the "from" date)
+from_date = Date.new(mdy_to[2].to_i, mdy_to[0].to_i, mdy_to[1].to_i)
+from_date -= 2
+to_date = Date.today
+
+open('chase_upload.log', 'a') { |f| f.puts "Processing for range #{format_date(from_date)} to #{format_date(to_date)}" }
 
 # create profile for download
 profile = Selenium::WebDriver::Firefox::Profile.new
@@ -19,19 +33,20 @@ FileUtils.rm Dir.glob('Activity*')
 
 b = Watir::Browser.new :firefox, :profile => profile
 
-b.goto 'https://chase.com'
+b.goto URL
 
-u = b.text_fields(:id=>'usr_name').detect{|f| f.visible?}
-u.set 'andreaclingenpeel'
-u = b.text_fields(:id=>'usr_password').detect{|f| f.visible?}
+u = b.text_fields(:id=>'usr_name_home').detect{|f| f.visible?}
+u.set USERNAME
+u = b.text_fields(:id=>'usr_password_home').detect{|f| f.visible?}
 u.set ARGV[0]
-b.button(:src => /home-login-button/).click
+l = b.links(:class=>'chase-button').detect{|f| f.visible?}
+l.click
 
-b.link(:href => /Activity\/270315367/).when_present.click
+b.link(:href => /Activity\/395970510/).when_present.click
 b.link(:href => /#AdvancedSearchView/).when_present.click
 b.radio(:id => 'RangePeriod').when_present.set
-b.text_field(:id=>'DateLo').set ARGV[1]
-b.text_field(:id=>'DateHi').set ARGV[2]
+b.text_field(:id=>'DateLo').set format_date(from_date)
+b.text_field(:id=>'DateHi').set format_date(to_date)
 b.link(:id => 'AdvancedSearch').click
 
 b.link(:text => 'Download').click
