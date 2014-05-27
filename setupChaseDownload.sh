@@ -4,7 +4,7 @@ require 'watir-webdriver'
 require 'date'
 
 URL = 'https://chase.com'
-USERNAME = 'andreaclingenpeel'
+USERNAME = ARGV[0]
 
 def format_date(dt)
   dt.strftime('%m/%d/%Y')
@@ -38,15 +38,15 @@ b.goto URL
 u = b.text_fields(:id=>'usr_name_home').detect{|f| f.visible?}
 u.set USERNAME
 u = b.text_fields(:id=>'usr_password_home').detect{|f| f.visible?}
-u.set ARGV[0]
+u.set ARGV[1]
 l = b.links(:class=>'chase-button').detect{|f| f.visible?}
 l.click
 
 b.link(:href => /Activity\/441623608/).when_present.click
 b.link(:href => /#AdvancedSearchView/).when_present.click
 b.radio(:id => 'RangePeriod').when_present.set
-b.text_field(:id=>'DateLo').set(ARGV.length > 1 ? ARGV[1] : format_date(from_date))
-b.text_field(:id=>'DateHi').set(ARGV.length > 1 ? ARGV[2] : format_date(to_date))
+b.text_field(:id=>'DateLo').set(ARGV.length > 1 ? ARGV[2] : format_date(from_date))
+b.text_field(:id=>'DateHi').set(ARGV.length > 1 ? ARGV[3] : format_date(to_date))
 b.link(:id => 'AdvancedSearch').click
 
 b.link(:text => 'Download').click
