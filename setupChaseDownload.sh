@@ -42,7 +42,7 @@ u.set ARGV[1]
 l = b.links(:class=>'chase-button').detect{|f| f.visible?}
 l.click
 
-b.link(:href => /Activity\/441623608/).when_present.click
+b.link(:href => /Activity\/525686132/).when_present.click
 b.link(:href => /#AdvancedSearchView/).when_present.click
 b.radio(:id => 'RangePeriod').when_present.set
 b.text_field(:id=>'DateLo').set(ARGV.length > 1 ? ARGV[2] : format_date(from_date))
