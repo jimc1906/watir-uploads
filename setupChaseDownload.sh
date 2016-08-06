@@ -17,7 +17,7 @@ mdy_to   = log_vals[5].split('/')
 
 # new date range -- last "to" minus 2 days to current date + 1 (as long as that is greater than the "from" date)
 from_date = Date.new(mdy_to[2].to_i, mdy_to[0].to_i, mdy_to[1].to_i)
-from_date -= 5
+from_date -= 15
 to_date = Date.today
 
 open('chase_upload.log', 'a') { |f| f.puts "Processing for range #{format_date(from_date)} to #{format_date(to_date)}" }
@@ -42,12 +42,12 @@ u.set ARGV[1]
 l = b.links(:class=>'chase-button').detect{|f| f.visible?}
 l.click
 
-b.link(:href => /Activity\/525686132/).when_present.click
+b.link(:href => /Activity\/586391940/).when_present.click
 b.link(:href => /#AdvancedSearchView/).when_present.click
 b.radio(:id => 'RangePeriod').when_present.set
 
 fdate = ARGV.length > 2 ? ARGV[2] : format_date(from_date)
-tdate = ARGV.length > 2 ? ARGV[2] : format_date(to_date)
+tdate = ARGV.length > 2 ? ARGV[3] : format_date(to_date)
 puts "Using dates - #{fdate} to #{tdate}"
 
 b.text_field(:id=>'DateLo').set(fdate)
